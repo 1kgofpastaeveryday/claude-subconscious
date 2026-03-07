@@ -252,13 +252,20 @@ function formatOutput(
  * Main function
  */
 async function main(): Promise<void> {
+  // On Windows, tsx cold start (~4-5s) exceeds the 5s timeout for PreToolUse hooks.
+  // Since this runs on EVERY tool call, the timeout causes constant errors.
+  // The UserPromptSubmit and Stop hooks handle message sync, so skipping here is safe.
+  if (process.platform === 'win32') {
+    process.exit(0);
+  }
+
   const mode = getMode();
   if (mode === 'off') {
     process.exit(0);
   }
 
   const apiKey = process.env.LETTA_API_KEY;
-  
+
   if (!apiKey) {
     debug('No LETTA_API_KEY set, skipping');
     process.exit(0);

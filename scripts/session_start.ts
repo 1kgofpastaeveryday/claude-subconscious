@@ -34,7 +34,7 @@ import {
 } from './conversation_utils.js';
 
 // Configuration
-const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'https://api.letta.com';
+const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'http://localhost:8990';
 const LETTA_API_BASE = `${LETTA_BASE_URL}/v1`;
 const TEMP_STATE_DIR = getTempStateDir();
 const LOG_FILE = path.join(TEMP_STATE_DIR, 'session_start.log');
@@ -242,6 +242,15 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // On Windows with local server, skip all HTTP calls in session_start.
+  // The sync_letta_memory hook (UserPromptSubmit) handles conversation creation
+  // and memory sync. session_start's main features (TTY display, session message)
+  // don't work well on Windows (no /dev/tty, fetch hangs in PseudoConsole).
+  if (process.platform === 'win32' && process.env.LETTA_BASE_URL) {
+    log('Windows + local server detected, deferring to sync_letta_memory hook');
+    process.exit(0);
+  }
+
   // Try to open TTY for user-visible output (bypasses Claude's capture)
   let tty: fs.WriteStream | null = null;
   try {
@@ -286,7 +295,7 @@ async function main(): Promise<void> {
 
     // Settings
     const checkpointMode = process.env.LETTA_CHECKPOINT_MODE || 'blocking';
-    const baseUrl = process.env.LETTA_BASE_URL || 'https://api.letta.com';
+    const baseUrl = process.env.LETTA_BASE_URL || 'http://localhost:8990';
     writeTty(`  Model:      ${modelHandle}\n`);
     writeTty(`  Mode:       ${mode}\n`);
     writeTty(`  Checkpoint: ${checkpointMode}\n`);

@@ -46,3 +46,9 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Local server runtime data
+server/data/
+server/.server.pid
+server/server.log
+server/node_modules/

@@ -237,6 +237,11 @@ async function sendAndWaitForResponse(
  * Main function
  */
 async function main(): Promise<void> {
+  // Skip on Windows — tsx cold start exceeds PreToolUse timeout
+  if (process.platform === 'win32') {
+    process.exit(0);
+  }
+
   log('='.repeat(60));
   log('plan_checkpoint.ts started');
 

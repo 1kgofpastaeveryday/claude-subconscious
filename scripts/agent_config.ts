@@ -19,7 +19,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'https://api.letta.com';
+const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'http://localhost:8990';
 const LETTA_API_BASE = `${LETTA_BASE_URL}/v1`;
 const CONFIG_DIR = path.join(process.env.HOME || '~', '.letta', 'claude-subconscious');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
@@ -516,6 +516,11 @@ export async function getAgentId(apiKey: string, log: (msg: string) => void = co
   }
   
   // 4. Ensure model is available (auto-select if not)
+  // Skip if model is already configured — avoids HTTP calls that may hang/timeout
+  if (config.model) {
+    log(`Model already configured: ${config.model}, skipping availability check`);
+    return agentId;
+  }
   try {
     const configuredModel = await ensureModelAvailable(apiKey, agentId, log);
     if (configuredModel && config.model !== configuredModel) {

@@ -6,8 +6,13 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/server/ensure-server.cjs\"",
+            "timeout": 30
+          },
+          {
+            "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/silent-npx.cjs\" tsx \"${CLAUDE_PLUGIN_ROOT}/scripts/session_start.ts\"",
-            "timeout": 5
+            "timeout": 30
           },
           {
             "type": "command",

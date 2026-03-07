@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'https://api.letta.com';
+const LETTA_BASE_URL = process.env.LETTA_BASE_URL || 'http://localhost:8990';
 export const LETTA_API_BASE = `${LETTA_BASE_URL}/v1`;
 // Only show app URL for hosted service; self-hosted users get IDs directly
 const IS_HOSTED = !process.env.LETTA_BASE_URL;
